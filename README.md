@@ -30,6 +30,7 @@ Feedback is always appreciated, this mod needs testing for sure!
 
 ## TODO
 
+- Restrict recalc code to only trigger on Inventory window, not every window
 - Weight affects climbing (the player will slip more)
 - Weight affects jump height
 - Ensure horse and cart speeds are not affected (for ease of gameplay)

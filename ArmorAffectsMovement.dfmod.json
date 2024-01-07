@@ -1,0 +1,9 @@
+{
+    "ModTitle": "ArmorAffectsMovement",
+    "ModVersion": "0.0.1",
+    "ModAuthor": "redmoss",
+    "DFUnity_Version": "1.0.0",
+    "ModDescription": "Implements movement penalties the heavier your equipment loadout, factoring in strength.",
+    "GUID": "b79d67b9-0d56-4e90-99b4-ace4f70d2dfc",
+    "Files": []
+}

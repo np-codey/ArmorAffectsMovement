@@ -89,7 +89,7 @@ namespace ArmorAffectsMovementMod
         {
             // Penalty is a portion of the total weight as a percentage reduction, with a bonus from strength.
             float weightModifier = (100f - (totalWeight / 1.5f)) / 100f;
-            float strengthModifier = player.Stats.LiveStrength / 200f;
+            float strengthModifier = player.Stats.LiveStrength / 500f;
             float strengthBonus = weightModifier * strengthModifier;
             float modifier = Mathf.Clamp(weightModifier + strengthBonus, 0f, 1f);
 
@@ -101,5 +101,4 @@ namespace ArmorAffectsMovementMod
             return modifier;
         }
     }
-}
 }

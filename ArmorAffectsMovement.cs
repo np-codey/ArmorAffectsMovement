@@ -49,7 +49,7 @@ namespace ArmorAffectsMovementMod
 
         public void RecalculateArmorSpeed(object sender, EventArgs e)
         {
-            // Clear the previous modifiers before recalculating.
+            // Clear the previous modifiers before recalculating, otherwise the modifiers will compound.
             if (walkSpeedId != null)
                 speedChanger.RemoveSpeedMod(walkSpeedId, false);
 
@@ -78,7 +78,7 @@ namespace ArmorAffectsMovementMod
             speedChanger.AddWalkSpeedMod(out string walkSpeedUID, armorPenalty);
             speedChanger.AddRunSpeedMod(out string runSpeedUID, armorPenalty);
 
-            // Cache the ids of the modifiers so we can clear them for recalculation.
+            // Cache the uids of the modifiers so we can clear them on recalculation.
             walkSpeedId = walkSpeedUID;
             runSpeedId = runSpeedUID;
         }
@@ -97,7 +97,9 @@ namespace ArmorAffectsMovementMod
 
             float weightModifier = (100f - (totalWeight / overallEffect)) / 100f;
             float strengthBonus = weightModifier * ((strength * (strength / 5)) / strengthEffect);
-            float modifier = Mathf.Clamp(weightModifier + strengthBonus, 0f, 1f);
+
+            // Ensure the speed modifier does not exceed 1 or cease movement entirely.
+            float modifier = Mathf.Clamp(weightModifier + strengthBonus, 0.1f, 1f);
 
             if (debugMode)
             {

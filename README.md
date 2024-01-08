@@ -14,7 +14,7 @@ Horse and cart travel is not affected, all players should be able to get around 
 
 ## Installation
 
-Place the `.dfmod` file into `StreamingAssets/Mods` folder in your DFU installation.
+Go into the appropriate folder for your OS, and place the `.dfmod` file there into `StreamingAssets/Mods` folder in your DFU installation.
 
 ## Formula
 
@@ -37,7 +37,8 @@ Feedback is always appreciated, this mod needs testing for sure!
 ## TODO
 
 - Restrict recalc code to only trigger on Inventory window, not every window
-- Weight affects climbing (the player will slip more)
-- Weight affects jump height
+- Weight affects climbing (the player will slip more), with a "you slip!" message, perhaps
 - Running uses more endurance as a function of weight
-- Feedback and messages: "Your armor weighs you down"
+- Feedback and messages: "Your armor weighs you down" and "Your armor makes climbing harder"
+- Revamp jump heights as they are quite underpowered anyway and this would emphasise low equip weight options
+-- Option to enable/disable

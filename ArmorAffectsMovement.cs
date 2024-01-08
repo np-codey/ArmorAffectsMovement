@@ -5,6 +5,8 @@ using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Utility;
 using System;
+using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
+using static Mono.CSharp.Parameter;
 
 namespace ArmorAffectsMovementMod
 {
@@ -13,9 +15,13 @@ namespace ArmorAffectsMovementMod
         private static Mod mod;
         string walkSpeedId;
         string runSpeedId;
+        float overallMovementEffect;
+        float overallJumpMultiplier;
         bool debugMode = false;
+        ModSettings settings;
         PlayerEntity player;
         PlayerSpeedChanger speedChanger;
+        AcrobatMotor acrobatMotor;
 
         [Invoke(StateManager.StateTypes.Start, 0)]
         public static void Init(InitParams initParams)
@@ -28,26 +34,31 @@ namespace ArmorAffectsMovementMod
 
         void Start()
         {
-            // debugMode = true;
+            debugMode = true;
+            settings = mod.GetSettings();
+
             speedChanger = GameManager.Instance.SpeedChanger;
             player = GameManager.Instance.PlayerEntity;
+            acrobatMotor = GameManager.Instance.AcrobatMotor;
+            overallMovementEffect = settings.GetValue<float>("General", "overallMovementEffect");
+            overallJumpMultiplier = settings.GetValue<float>("General", "overallJumpMultiplier");
 
-            SaveLoadManager.OnLoad += InitArmorSpeed;
-            StartGameBehaviour.OnStartGame += InitArmorSpeed;
-            DaggerfallUI.UIManager.OnWindowChange += RecalculateArmorSpeed;
+            SaveLoadManager.OnLoad += InitMovement;
+            StartGameBehaviour.OnStartGame += InitMovement;
+            DaggerfallUI.UIManager.OnWindowChange += RecalculateMovement;
         }
 
-        public void InitArmorSpeed(object sender, EventArgs e)
+        public void InitMovement(object sender, EventArgs e)
         {
-            modifyMovementFromArmor();
+            modifyMovement();
         }
 
-        public void InitArmorSpeed(SaveData_v1 saveData)
+        public void InitMovement(SaveData_v1 saveData)
         {
-            modifyMovementFromArmor();
+            modifyMovement();
         }
 
-        public void RecalculateArmorSpeed(object sender, EventArgs e)
+        public void RecalculateMovement(object sender, EventArgs e)
         {
             // Clear the previous modifiers before recalculating, otherwise the modifiers will compound.
             if (walkSpeedId != null)
@@ -56,10 +67,10 @@ namespace ArmorAffectsMovementMod
             if (runSpeedId != null)
                 speedChanger.RemoveSpeedMod(runSpeedId, true);
 
-            modifyMovementFromArmor();
+            modifyMovement();
         }
 
-        void modifyMovementFromArmor()
+        void modifyMovement()
         {
             var equipment = player.ItemEquipTable.EquipTable;
             float totalWeight = 0f;
@@ -73,10 +84,11 @@ namespace ArmorAffectsMovementMod
                 totalWeight += equipment[i].weightInKg;
             }
 
-            var armorPenalty = calculateArmorMovementPenalty(totalWeight);
+            var armorPenalty = calculateArmorWalkRunPenalty(totalWeight);
 
             speedChanger.AddWalkSpeedMod(out string walkSpeedUID, armorPenalty);
             speedChanger.AddRunSpeedMod(out string runSpeedUID, armorPenalty);
+            acrobatMotor.jumpSpeed = AcrobatMotor.defaultJumpSpeed * calculateJumpSpeedPenalty(totalWeight);
 
             // Cache the uids of the modifiers so we can clear them on recalculation.
             walkSpeedId = walkSpeedUID;
@@ -84,19 +96,18 @@ namespace ArmorAffectsMovementMod
         }
 
         // How much to modify speed (e.g. 75% of normal speed: 0.75, No change: 1)
-        float calculateArmorMovementPenalty(float totalWeight)
+        float calculateArmorWalkRunPenalty(float totalWeight)
         {
-            var settings = mod.GetSettings();
             float strength = player.Stats.LiveStrength;
 
             // Power of the effect of weight, from 1 to 3. 1 is severe, 3 is weak. Default is 1.4.
-            float overallEffect = settings.GetValue<float>("Overall", "overallEffect");
+            float overallEffect = overallMovementEffect;
 
             // Impact that strength has, from 1000 to 7000. 1500 is strong, 10000 is weak.
             float strengthEffect = 6000f;
 
             float weightModifier = (100f - (totalWeight / overallEffect)) / 100f;
-            float strengthBonus = weightModifier * ((strength * (strength / 5)) / strengthEffect);
+            float strengthBonus = weightModifier * ((strength * (strength / 5f)) / strengthEffect);
 
             // Ensure the speed modifier does not exceed 1 or cease movement entirely.
             float modifier = Mathf.Clamp(weightModifier + strengthBonus, 0.1f, 1f);
@@ -108,6 +119,19 @@ namespace ArmorAffectsMovementMod
                 Debug.Log("ArmorAffectsMovement | Weight modifier: " + weightModifier);
                 Debug.Log("ArmorAffectsMovement | Strength bonus: " + strengthBonus);
                 Debug.Log("ArmorAffectsMovement | Speed modifier: " + modifier);
+            }
+
+            return modifier;
+        }
+
+        float calculateJumpSpeedPenalty(float totalWeight)
+        {
+            float modifier = 1f;
+            modifier *= overallJumpMultiplier;
+
+            if (debugMode)
+            {
+                Debug.Log("ArmorAffectsMovement | Jump modifier: " + modifier);
             }
 
             return modifier;

@@ -2,16 +2,25 @@
     "Version": "0.0.3",
     "Sections": [
         {
-            "Name": "Overall",
+            "Name": "General",
             "Description": null,
             "IsAdvanced": false,
             "Keys": [
                 {
                     "Min": 1.0,
                     "Max": 3.0,
-                    "Value": 1.4,
-                    "Name": "overallEffect",
+                    "Value": 1.5,
+                    "Name": "overallMovementEffect",
                     "Description": "How much armor affects movement. 1 is strong, 3 is very weak.",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderFloatKey"
+                },
+                {
+                    "Min": 1.0,
+                    "Max": 1.5,
+                    "Value": 1.5,
+                    "Name": "overallJumpMultiplier",
+                    "Description": "Boosts jump speed to make light armor builds more dynamic. 1 is the Daggerfall baseline.",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderFloatKey"
                 }

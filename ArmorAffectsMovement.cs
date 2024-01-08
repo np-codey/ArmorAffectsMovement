@@ -23,9 +23,6 @@ namespace ArmorAffectsMovementMod
             mod = initParams.Mod;
             var go = new GameObject(mod.Title);
             go.AddComponent<ArmorAffectsMovement>();
-
-
-
             mod.IsReady = true;
         }
 

@@ -1,5 +1,5 @@
 {
-    "Version": "0.0.4",
+    "Version": "0.0.5",
     "Sections": [
         {
             "Name": "General",
@@ -9,7 +9,7 @@
                 {
                     "Min": 0.7,
                     "Max": 2.0,
-                    "Value": 0.9,
+                    "Value": 0.8,
                     "Name": "overallMovementEffect",
                     "Description": "How much armor affects movement. 0.7 is strong, 2 is very weak.",
                     "$version": "v1",

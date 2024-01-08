@@ -6,7 +6,8 @@ using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Utility;
 using System;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
-using static Mono.CSharp.Parameter;
+using DaggerfallWorkshop.Game.Formulas;
+using DaggerfallConnect;
 
 namespace ArmorAffectsMovementMod
 {
@@ -34,18 +35,19 @@ namespace ArmorAffectsMovementMod
 
         void Start()
         {
-            debugMode = true;
+            // debugMode = true;
             settings = mod.GetSettings();
-
             speedChanger = GameManager.Instance.SpeedChanger;
             player = GameManager.Instance.PlayerEntity;
             acrobatMotor = GameManager.Instance.AcrobatMotor;
             overallMovementEffect = settings.GetValue<float>("General", "overallMovementEffect");
             overallJumpMultiplier = settings.GetValue<float>("General", "overallJumpMultiplier");
 
+            // Register the various modifications to movement.
             SaveLoadManager.OnLoad += InitMovement;
             StartGameBehaviour.OnStartGame += InitMovement;
             DaggerfallUI.UIManager.OnWindowChange += RecalculateMovement;
+            FormulaHelper.RegisterOverride<Func<PlayerEntity, int, int>>(mod, "CalculateClimbingChance", CalculateClimbingChance);
         }
 
         public void InitMovement(object sender, EventArgs e)
@@ -60,7 +62,7 @@ namespace ArmorAffectsMovementMod
 
         public void RecalculateMovement(object sender, EventArgs e)
         {
-            // Clear the previous modifiers before recalculating, otherwise the modifiers will compound.
+            // Clear the previous walk/run modifiers before recalc, otherwise the modifiers will compound.
             if (walkSpeedId != null)
                 speedChanger.RemoveSpeedMod(walkSpeedId, false);
 
@@ -70,7 +72,7 @@ namespace ArmorAffectsMovementMod
             modifyMovement();
         }
 
-        void modifyMovement()
+        float getEquipmentWeight()
         {
             var equipment = player.ItemEquipTable.EquipTable;
             float totalWeight = 0f;
@@ -84,13 +86,20 @@ namespace ArmorAffectsMovementMod
                 totalWeight += equipment[i].weightInKg;
             }
 
+            // Ensure weight is never so high as to break out calculations, this is to protect against other mods.
+            return Mathf.Clamp(totalWeight, 0f, 95f);
+        }
+
+        void modifyMovement()
+        {
+            var totalWeight = getEquipmentWeight();
             var armorPenalty = calculateArmorWalkRunPenalty(totalWeight);
 
             speedChanger.AddWalkSpeedMod(out string walkSpeedUID, armorPenalty);
             speedChanger.AddRunSpeedMod(out string runSpeedUID, armorPenalty);
             acrobatMotor.jumpSpeed = AcrobatMotor.defaultJumpSpeed * calculateJumpSpeedPenalty(totalWeight);
 
-            // Cache the uids of the modifiers so we can clear them on recalculation.
+            // Cache the uids of the walk/run modifiers so we can clear them on recalculation.
             walkSpeedId = walkSpeedUID;
             runSpeedId = runSpeedUID;
         }
@@ -132,11 +141,44 @@ namespace ArmorAffectsMovementMod
             modifier = Mathf.Clamp(modifier * overallJumpMultiplier, 0.1f, float.MaxValue);
 
             if (debugMode)
-            {
                 Debug.Log("ArmorAffectsMovement | Jump modifier: " + modifier);
-            }
 
             return modifier;
+        }
+
+        // Overrides the base formula in Formulas/FormulaHelper.cs -> CalculateClimbingChance().
+        // As such, if the original formula ever changes, this should also be updated.
+        int CalculateClimbingChance(PlayerEntity player, int basePercentSuccess)
+        {
+            int skill = player.Skills.GetLiveSkillValue(DFCareer.Skills.Climbing);
+            int luck = player.Stats.GetLiveStatValue(DFCareer.Stats.Luck);
+
+            if (player.Race == Races.Khajiit)
+                skill += 30;
+
+            // Climbing effect states "target can climb twice as well" - doubling effective skill after racial applied
+            if (player.IsEnhancedClimbing)
+                skill *= 2;
+
+            // Armor weight modifier
+            float equipWeight = getEquipmentWeight();
+            float weightModifier = (equipWeight >= 15f) ? (equipWeight * equipWeight) / 20f : 0f;
+            skill -= (int)weightModifier;
+
+            // Clamp skill range
+            skill = Mathf.Clamp(skill, 5, 95);
+            float luckFactor = Mathf.Lerp(0, 10, luck * 0.01f);
+
+            // Skill Check
+            int chance = (int)(Mathf.Lerp(basePercentSuccess, 100, skill * .01f) + luckFactor);
+
+            if (debugMode)
+            {
+                Debug.Log("ArmorAffectsMovement | Weight malus: " + weightModifier);
+                Debug.Log("ArmorAffectsMovement | Final climb skill: " + skill);
+            }
+
+            return chance;
         }
     }
 }

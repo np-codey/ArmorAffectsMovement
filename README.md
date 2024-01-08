@@ -16,6 +16,7 @@ To help with this, the baseline jump height has been increased so there are more
 
 * Walk and run speed is affected by the total weight of what you have equipped, mitigated by strength. There is an option to make this effect even stronger, or weaker. 
 * Jump height is affected by the total weight of what you have equipped.
+* Climb skill is affected by the total weight of what you have equipped; heavy armors making climbing extremely difficult.
 * Base jump height has been boosted, to give light armor users more acrobatic ability. There is an option to bring this back down to vanilla level.
 * Horse and cart travel should be the usual speed, to avoid travel tedium.
 
@@ -23,9 +24,11 @@ To help with this, the baseline jump height has been increased so there are more
 
 Go into the appropriate folder for your OS, and place the `.dfmod` file there into `StreamingAssets/Mods` folder in your DFU installation.
 
+## Conflicts
+
+This mod overrides the CalculateClimbingChance formula, so any mods that also do the same may be incompatible. Please reach out if there's a clash of mods!
+
 ## TODO
 
-- Horse jump height is increased due to the baseline jumping height boost (although it is reduced with armor also). We might want to reduce this specifically for horseback.
-- Weight affects climbing (the player will slip more), with a "you slip!" message, perhaps.
-- Running uses more endurance, as a function of weight.
-- Feedback and messages: "Your armor weighs you down" and "Your armor makes climbing harder".
+- Put a message on the UI somewhere indicating the rough level of restriction. E.g. "Light armor burden, medium armor burden, heavy armor burden"
+- Running uses more endurance, as a function of weight (maybe?)

@@ -21,9 +21,11 @@ Place the `.dfmod` file into `StreamingAssets/Mods` folder in your DFU installat
 The current formula should be:
 ```
 totalWeight is the total weight of the player's equipped armor in kilograms.
+overallEffect: 1 to 3
+strengthEffect: 200 to 600
 
-weightModifier = (100f - (totalWeight / 1.5f)) / 100f
-strengthModifier = Strength / 500f
+weightModifier = (100f - (totalWeight / overallEffect)) / 100f
+strengthModifier = Strength / strengthEffect
 strengthBonus = weightModifier * strengthModifier
 modifier = Mathf.Clamp(weightModifier + strengthBonus, 0f, 1f)
 ```

@@ -23,6 +23,9 @@ namespace ArmorAffectsMovementMod
             mod = initParams.Mod;
             var go = new GameObject(mod.Title);
             go.AddComponent<ArmorAffectsMovement>();
+
+
+
             mod.IsReady = true;
         }
 
@@ -86,21 +89,26 @@ namespace ArmorAffectsMovementMod
         // How much to modify speed (e.g. 75% of normal speed: 0.75, No change: 1)
         float calculateArmorMovementPenalty(float totalWeight)
         {
-            // Power of the effect of weight, from 1 to 3. 1 is strong, 2 is default, 3 is weak.
-            float overallEffect = 2f;
-            // Impact that strength has, from 200 to 700. 200 is strong, 700 is weak.
-            float strengthEffect = 500f;
+            var settings = mod.GetSettings();
+            float strength = player.Stats.LiveStrength;
+
+            // Power of the effect of weight, from 1 to 3. 1 is severe, 3 is weak. Default is 1.4.
+            float overallEffect = settings.GetValue<float>("Overall", "overallEffect");
+
+            // Impact that strength has, from 1000 to 7000. 1500 is strong, 10000 is weak.
+            float strengthEffect = 6000f;
 
             float weightModifier = (100f - (totalWeight / overallEffect)) / 100f;
-            float strengthBonus = weightModifier * (player.Stats.LiveStrength / strengthEffect);
+            float strengthBonus = weightModifier * ((strength * (strength / 5)) / strengthEffect);
             float modifier = Mathf.Clamp(weightModifier + strengthBonus, 0f, 1f);
 
             if (debugMode)
             {
+                Debug.Log("ArmorAffectsMovement | Overall effect: " + overallEffect);
                 Debug.Log("ArmorAffectsMovement | Total Weight: " + totalWeight);
                 Debug.Log("ArmorAffectsMovement | Weight modifier: " + weightModifier);
                 Debug.Log("ArmorAffectsMovement | Strength bonus: " + strengthBonus);
-                Debug.Log("ArmorAffectsMovement | Armor modifier: " + modifier);
+                Debug.Log("ArmorAffectsMovement | Speed modifier: " + modifier);
             }
 
             return modifier;

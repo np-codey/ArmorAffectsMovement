@@ -41,6 +41,5 @@ Feedback is always appreciated, this mod needs testing for sure!
 - Weight affects jump height
 - Running uses more endurance as a function of weight
 - Ensure horse and cart speeds are not affected (for ease of gameplay)
-- Options, such as ignoring weapon weight, a global modifier for user taste
 - Feedback and messages: "Your armor weighs you down"
 - Holding a shield affects climbing? I think Roleplay and Realism forces you to sheath weapon to climb.

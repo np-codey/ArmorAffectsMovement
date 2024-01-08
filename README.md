@@ -8,7 +8,9 @@ redmoss, with huge thanks to Magicono43
 
 This mod applies the burden of armor and weapons on the player by restricting their movement speed. The heavier your equipment loadout, the slower you become; but characters with high strength can offset this to a certain extent.
 
-This is an RP-flavoured mod, essentially. The goal is to put a downside on wearing heavy armor, to make it not only more realistic, but to give an actual advantage for wearing light armor. The vanilla Daggerfall experience makes it a no-brainer to go full plate on every character since there is no downside; armor is effectively a dodge suit. Thus, Rogue/assassin/burglar characters will benefit from full freedom of movement with this, allowing them to freely climb and leap around, while heavier armoured characters will have to stick to the ground.
+This is an RP-flavoured mod, essentially. The goal is to put a downside on wearing heavy armor, to make it not only more realistic, but to give an actual advantage for wearing light armor. The vanilla Daggerfall experience makes it a no-brainer to go full plate on every character since there is no apparent downside; armor is effectively a dodge suit. Thus, rogue/assassin/burglar characters will benefit from full freedom of movement with this, allowing them to freely climb and leap around, while heavier armoured characters will have to stick to the ground, or hasten themselves with magical means.
+
+Horse and cart travel is not affected, all players should be able to get around the world at a good pace, otherwise it becomes tedious.
 
 ## Installation
 

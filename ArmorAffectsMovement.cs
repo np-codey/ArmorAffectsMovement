@@ -11,10 +11,11 @@ namespace ArmorAffectsMovementMod
     public class ArmorAffectsMovement : MonoBehaviour
     {
         private static Mod mod;
-        PlayerEntity player;
-        PlayerSpeedChanger speedChanger;
         string walkSpeedId;
         string runSpeedId;
+        bool debugMode = false;
+        PlayerEntity player;
+        PlayerSpeedChanger speedChanger;
 
         [Invoke(StateManager.StateTypes.Start, 0)]
         public static void Init(InitParams initParams)
@@ -27,40 +28,38 @@ namespace ArmorAffectsMovementMod
 
         void Start()
         {
+            debugMode = true;
             speedChanger = GameManager.Instance.SpeedChanger;
             player = GameManager.Instance.PlayerEntity;
 
-            SaveLoadManager.OnLoad += InitArmorSpeeds;
-            StartGameBehaviour.OnStartGame += InitArmorSpeeds;
-            DaggerfallUI.UIManager.OnWindowChange += RecalcArmorSpeeds;
-
-            Debug.Log("ArmorAffectsMovement | Mod started.");
+            SaveLoadManager.OnLoad += InitArmorSpeed;
+            StartGameBehaviour.OnStartGame += InitArmorSpeed;
+            DaggerfallUI.UIManager.OnWindowChange += RecalculateArmorSpeed;
         }
 
-        public void InitArmorSpeeds(object sender, EventArgs e)
+        public void InitArmorSpeed(object sender, EventArgs e)
         {
             modifyMovementFromArmor();
         }
 
-        public void InitArmorSpeeds(SaveData_v1 saveData)
+        public void InitArmorSpeed(SaveData_v1 saveData)
         {
             modifyMovementFromArmor();
         }
 
-        public void RecalcArmorSpeeds(object sender, EventArgs e)
+        public void RecalculateArmorSpeed(object sender, EventArgs e)
         {
             // Clear the previous modifiers before recalculating.
-            Debug.Log("ArmorAffectsMovement | Recalculating...");
-
             if (walkSpeedId != null)
                 speedChanger.RemoveSpeedMod(walkSpeedId, false);
+
             if (runSpeedId != null)
                 speedChanger.RemoveSpeedMod(runSpeedId, true);
 
             modifyMovementFromArmor();
         }
 
-        private void modifyMovementFromArmor()
+        void modifyMovementFromArmor()
         {
             var equipment = player.ItemEquipTable.EquipTable;
             float totalWeight = 0f;
@@ -79,24 +78,25 @@ namespace ArmorAffectsMovementMod
             speedChanger.AddWalkSpeedMod(out string walkSpeedUID, armorPenalty);
             speedChanger.AddRunSpeedMod(out string runSpeedUID, armorPenalty);
 
-            // Cache the ids of the modifiers so we can clear them for recalc.
+            // Cache the ids of the modifiers so we can clear them for recalculation.
             walkSpeedId = walkSpeedUID;
             runSpeedId = runSpeedUID;
         }
 
         // How much to modify speed (e.g. 75% of normal speed: 0.75, No change: 1)
-        private float calculateArmorMovementPenalty(float totalWeight)
+        float calculateArmorMovementPenalty(float totalWeight)
         {
-            // Penalty is a portion of the total weight as a percentage reduction, with a bonus from strength.
             float weightModifier = (100f - (totalWeight / 1.5f)) / 100f;
-            float strengthModifier = player.Stats.LiveStrength / 500f;
-            float strengthBonus = weightModifier * strengthModifier;
+            float strengthBonus = weightModifier * (player.Stats.LiveStrength / 500f);
             float modifier = Mathf.Clamp(weightModifier + strengthBonus, 0f, 1f);
 
-            Debug.Log("ArmorAffectsMovement | Total Weight: " + totalWeight);
-            Debug.Log("ArmorAffectsMovement | Weight modifier: " + weightModifier);
-            Debug.Log("ArmorAffectsMovement | Strength bonus: " + strengthBonus);
-            Debug.Log("ArmorAffectsMovement | Armor modifier: " + modifier);
+            if (debugMode)
+            {
+                Debug.Log("ArmorAffectsMovement | Total Weight: " + totalWeight);
+                Debug.Log("ArmorAffectsMovement | Weight modifier: " + weightModifier);
+                Debug.Log("ArmorAffectsMovement | Strength bonus: " + strengthBonus);
+                Debug.Log("ArmorAffectsMovement | Armor modifier: " + modifier);
+            }
 
             return modifier;
         }

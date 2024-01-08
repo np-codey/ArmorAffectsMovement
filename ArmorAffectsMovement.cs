@@ -28,7 +28,7 @@ namespace ArmorAffectsMovementMod
 
         void Start()
         {
-            debugMode = true;
+            // debugMode = true;
             speedChanger = GameManager.Instance.SpeedChanger;
             player = GameManager.Instance.PlayerEntity;
 

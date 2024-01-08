@@ -15,7 +15,7 @@ To help with this, the baseline jump height has been increased so there are more
 Main features
 
 * Walk and run speed is affected by the total weight of what you have equipped, mitigated by strength. There is an option to make this effect even stronger, or weaker. 
-* Jump height is affect by the total weight of what you have equipped.
+* Jump height is affected by the total weight of what you have equipped.
 * Base jump height has been boosted, to give light armor users more acrobatic ability. There is an option to bring this back down to vanilla level.
 * Horse and cart travel should be the usual speed, to avoid travel tedium.
 

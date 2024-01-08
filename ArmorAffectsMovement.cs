@@ -86,10 +86,10 @@ namespace ArmorAffectsMovementMod
         // How much to modify speed (e.g. 75% of normal speed: 0.75, No change: 1)
         float calculateArmorMovementPenalty(float totalWeight)
         {
-            // Power of the effect of weight, from 1 to 3. 1 is strong, 3 is weak.
+            // Power of the effect of weight, from 1 to 3. 1 is strong, 2 is default, 3 is weak.
             float overallEffect = 2f;
             // Impact that strength has, from 200 to 700. 200 is strong, 700 is weak.
-            float strengthEffect = 500;
+            float strengthEffect = 500f;
 
             float weightModifier = (100f - (totalWeight / overallEffect)) / 100f;
             float strengthBonus = weightModifier * (player.Stats.LiveStrength / strengthEffect);

@@ -1,10 +1,10 @@
+using System;
 using UnityEngine;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Utility;
-using System;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
 using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallConnect;
@@ -72,24 +72,6 @@ namespace ArmorAffectsMovementMod
             modifyMovement();
         }
 
-        float getEquipmentWeight()
-        {
-            var equipment = player.ItemEquipTable.EquipTable;
-            float totalWeight = 0f;
-
-            // Iterate through the equipment slots and calculate weight total of all equipped items.
-            for (int i = 0; i < equipment.Length; i++)
-            {
-                if (equipment[i] == null)
-                    continue;
-
-                totalWeight += equipment[i].weightInKg;
-            }
-
-            // Ensure weight is never so high as to break out calculations, this is to protect against other mods.
-            return Mathf.Clamp(totalWeight, 0f, 95f);
-        }
-
         void modifyMovement()
         {
             var totalWeight = getEquipmentWeight();
@@ -104,19 +86,37 @@ namespace ArmorAffectsMovementMod
             runSpeedId = runSpeedUID;
         }
 
+        float getEquipmentWeight()
+        {
+            var equipment = player.ItemEquipTable.EquipTable;
+            float totalWeight = 0f;
+
+            // Iterate through the equipment slots and calculate weight total of all equipped items.
+            for (int i = 0; i < equipment.Length; i++)
+            {
+                if (equipment[i] == null)
+                    continue;
+
+                totalWeight += equipment[i].weightInKg;
+            }
+
+            // Ensure weight is never ridiculously high as to break our calculations; protects against other mods too.
+            return Mathf.Clamp(totalWeight, 0f, 100f);
+        }
+
         // How much to modify speed (e.g. 75% of normal speed: 0.75, No change: 1)
         float calculateArmorWalkRunPenalty(float totalWeight)
         {
             float strength = player.Stats.LiveStrength;
 
-            // Power of the effect of weight, from 1 to 3. 1 is severe, 3 is weak. Default is 1.4.
+            // Power of the effect of weight, see settings for range and default.
             float overallEffect = overallMovementEffect;
 
-            // Impact that strength has, from 1000 to 7000. 1500 is strong, 10000 is weak.
+            // Impact that strength has, from 1000 to 10000. 1500 is strong, 10000 is weak.
             float strengthEffect = 4000f;
 
             float weightModifier = (110f - (totalWeight / overallEffect)) / 100f;
-            float strengthBonus = weightModifier * ((strength * (strength / 5f)) / strengthEffect);
+            float strengthBonus = weightModifier * (strength * (strength / 5f) / strengthEffect);
 
             // Ensure the speed modifier does not exceed 1 or cease movement entirely.
             float modifier = Mathf.Clamp(weightModifier + strengthBonus, 0.1f, 1f);
@@ -162,7 +162,7 @@ namespace ArmorAffectsMovementMod
 
             // Armor weight modifier
             float equipWeight = getEquipmentWeight();
-            float weightModifier = (equipWeight >= 15f) ? (equipWeight * equipWeight) / 20f : 0f;
+            float weightModifier = (equipWeight >= 17f) ? (equipWeight * equipWeight) / 20f : 0f;
             skill -= (int)weightModifier;
 
             // Clamp skill range

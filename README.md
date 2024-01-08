@@ -12,7 +12,7 @@ This is an RP-flavoured mod, essentially. The goal is to add a downside to weari
 
 To help with this, the baseline jump height has been increased so there are more acrobatic possibilities for light armor characters. Specifically, a character in leather armor with a daedric one-hander and a high jumping skill should be able to vault onto the roof of a small house with a running jump.
 
-Main features
+## Main features
 
 * Walk and run speed is affected by the total weight of what you have equipped, mitigated by strength. There is an option to make this effect even stronger, or weaker. 
 * Jump height is affected by the total weight of what you have equipped.

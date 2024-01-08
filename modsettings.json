@@ -7,11 +7,11 @@
             "IsAdvanced": false,
             "Keys": [
                 {
-                    "Min": 1.0,
-                    "Max": 3.0,
-                    "Value": 1.5,
+                    "Min": 0.7,
+                    "Max": 2.0,
+                    "Value": 0.9,
                     "Name": "overallMovementEffect",
-                    "Description": "How much armor affects movement. 1 is strong, 3 is very weak.",
+                    "Description": "How much armor affects movement. 0.7 is strong, 2 is very weak.",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderFloatKey"
                 },

@@ -104,9 +104,9 @@ namespace ArmorAffectsMovementMod
             float overallEffect = overallMovementEffect;
 
             // Impact that strength has, from 1000 to 7000. 1500 is strong, 10000 is weak.
-            float strengthEffect = 6000f;
+            float strengthEffect = 4000f;
 
-            float weightModifier = (100f - (totalWeight / overallEffect)) / 100f;
+            float weightModifier = (110f - (totalWeight / overallEffect)) / 100f;
             float strengthBonus = weightModifier * ((strength * (strength / 5f)) / strengthEffect);
 
             // Ensure the speed modifier does not exceed 1 or cease movement entirely.
@@ -124,10 +124,12 @@ namespace ArmorAffectsMovementMod
             return modifier;
         }
 
+        // How much to modify jump height (e.g. 75% of normal height: 0.75, No change: 1)
         float calculateJumpSpeedPenalty(float totalWeight)
         {
-            float modifier = 1f;
-            modifier *= overallJumpMultiplier;
+            // If the equip weight is under 17kg, no jump penalty. This should allow for roughly full leather and a daedric one-hander.
+            float modifier = totalWeight > 17f ? (110f - totalWeight) / 100f : 1f;
+            modifier = Mathf.Clamp(modifier * overallJumpMultiplier, 0.1f, float.MaxValue);
 
             if (debugMode)
             {

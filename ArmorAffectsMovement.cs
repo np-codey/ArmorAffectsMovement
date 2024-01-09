@@ -8,6 +8,7 @@ using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
 using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallConnect;
+using DaggerfallWorkshop.Game.Items;
 
 namespace ArmorAffectsMovementMod
 {
@@ -88,16 +89,14 @@ namespace ArmorAffectsMovementMod
 
         float getEquipmentWeight()
         {
-            var equipment = player.ItemEquipTable.EquipTable;
             float totalWeight = 0f;
 
-            // Iterate through the equipment slots and calculate weight total of all equipped items.
-            for (int i = 0; i < equipment.Length; i++)
+            foreach (DaggerfallUnityItem item in player.ItemEquipTable.EquipTable)
             {
-                if (equipment[i] == null)
+                if (item == null)
                     continue;
 
-                totalWeight += equipment[i].weightInKg;
+                totalWeight += item.weightInKg;
             }
 
             // Ensure weight is never ridiculously high as to break our calculations; protects against other mods too.

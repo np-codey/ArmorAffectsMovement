@@ -4,6 +4,12 @@
 
 redmoss, with thanks to Magicono43
 
+## Conflicts
+
+Roleplay and Realism also has encumbrance (although it's total-weight based and only applies to walk/run), so having both enabled may apply to great a penalty. Disable the Encumbrance module in Roleplay and Realism, or disable the walk/run penalty setting in this mod as you prefer.
+
+This mod overrides the CalculateClimbingChance formula, so any mods that also do the same may be incompatible. Please reach out if there's a clash of mods!
+
 ## Description
 
 This mod causes a character's equipped weapon and armor to impact movement. Armor and weapon weight cause penalties to movement, jumping and climbing. In the case of movement, the character's strength will help mitigate some of this effect.
@@ -22,14 +28,4 @@ To help with this, the baseline jump height has been increased so there are more
 
 ## Installation
 
-Go into the appropriate folder for your OS, and place the `.dfmod` file there into `StreamingAssets/Mods` folder in your DFU installation.
-
-## Conflicts
-
-This mod overrides the CalculateClimbingChance formula, so any mods that also do the same may be incompatible. Please reach out if there's a clash of mods!
-
-## TODO
-
-- Test how spells interact with the mod
-- Put a message on the UI somewhere indicating the rough level of restriction. E.g. "Light armor burden, medium armor burden, heavy armor burden"
-- Running uses more endurance, as a function of weight (maybe?)
+Place the `.dfmod` file there into `StreamingAssets/Mods` folder in your DFU installation.

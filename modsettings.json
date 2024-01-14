@@ -1,11 +1,18 @@
 {
-    "Version": "0.0.5",
+    "Version": "0.0.6",
     "Sections": [
         {
             "Name": "General",
             "Description": null,
             "IsAdvanced": false,
             "Keys": [
+                {
+                    "Value": true,
+                    "Name": "enableWalkRunPenalty",
+                    "Description": "Equipment affects walk and run speed?",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
                 {
                     "Min": 0.7,
                     "Max": 2.0,
@@ -16,6 +23,13 @@
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderFloatKey"
                 },
                 {
+                    "Value": true,
+                    "Name": "enableJumpPenalty",
+                    "Description": "Equipment affects jumping?",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
                     "Min": 1.0,
                     "Max": 1.5,
                     "Value": 1.5,
@@ -23,6 +37,13 @@
                     "Description": "Boosts jump speed to make light armor builds more dynamic. 1 is the Daggerfall baseline.",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderFloatKey"
+                },
+                {
+                    "Value": true,
+                    "Name": "enableClimbPenalty",
+                    "Description": "Equipment affects climbing?",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
                 }
             ],
             "$version": "v1"

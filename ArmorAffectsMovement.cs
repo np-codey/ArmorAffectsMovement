@@ -17,6 +17,9 @@ namespace ArmorAffectsMovementMod
         private static Mod mod;
         string walkSpeedId;
         string runSpeedId;
+        bool enableWalkRunPenalty;
+        bool enableJumpPenalty;
+        bool enableClimbPenalty;
         float overallMovementEffect;
         float overallJumpMultiplier;
         bool debugMode = false;
@@ -41,6 +44,10 @@ namespace ArmorAffectsMovementMod
             speedChanger = GameManager.Instance.SpeedChanger;
             player = GameManager.Instance.PlayerEntity;
             acrobatMotor = GameManager.Instance.AcrobatMotor;
+
+            enableWalkRunPenalty = settings.GetValue<bool>("General", "enableWalkRunPenalty");
+            enableJumpPenalty = settings.GetValue<bool>("General", "enableJumpPenalty");
+            enableClimbPenalty = settings.GetValue<bool>("General", "enableClimbPenalty");
             overallMovementEffect = settings.GetValue<float>("General", "overallMovementEffect");
             overallJumpMultiplier = settings.GetValue<float>("General", "overallJumpMultiplier");
 
@@ -48,7 +55,9 @@ namespace ArmorAffectsMovementMod
             SaveLoadManager.OnLoad += InitMovement;
             StartGameBehaviour.OnStartGame += InitMovement;
             DaggerfallUI.UIManager.OnWindowChange += RecalculateMovement;
-            FormulaHelper.RegisterOverride<Func<PlayerEntity, int, int>>(mod, "CalculateClimbingChance", CalculateClimbingChance);
+
+            if (enableClimbPenalty) 
+                FormulaHelper.RegisterOverride<Func<PlayerEntity, int, int>>(mod, "CalculateClimbingChance", CalculateClimbingChance);
         }
 
         public void InitMovement(object sender, EventArgs e)
@@ -78,13 +87,16 @@ namespace ArmorAffectsMovementMod
             var totalWeight = getEquipmentWeight();
             var armorPenalty = calculateArmorWalkRunPenalty(totalWeight);
 
-            speedChanger.AddWalkSpeedMod(out string walkSpeedUID, armorPenalty);
-            speedChanger.AddRunSpeedMod(out string runSpeedUID, armorPenalty);
-            acrobatMotor.jumpSpeed = AcrobatMotor.defaultJumpSpeed * calculateJumpSpeedPenalty(totalWeight);
+            if (enableWalkRunPenalty) {
+                speedChanger.AddWalkSpeedMod(out string walkSpeedUID, armorPenalty);
+                speedChanger.AddRunSpeedMod(out string runSpeedUID, armorPenalty);
+                // Cache the uids of the walk/run modifiers so we can clear them on recalculation.
+                walkSpeedId = walkSpeedUID;
+                runSpeedId = runSpeedUID;
+            }
 
-            // Cache the uids of the walk/run modifiers so we can clear them on recalculation.
-            walkSpeedId = walkSpeedUID;
-            runSpeedId = runSpeedUID;
+            if (enableJumpPenalty)
+                acrobatMotor.jumpSpeed = AcrobatMotor.defaultJumpSpeed * calculateJumpSpeedPenalty(totalWeight);
         }
 
         float getEquipmentWeight()
